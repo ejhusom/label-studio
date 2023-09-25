@@ -1,6 +1,6 @@
 {
-  "message": "Fix tasks selection (#44)",
-  "commit": "97e33ac0a9b0ea09398b00d7916671ca76cf2a71",
+  "message": "fix: OPTIC-109: Blank draft should not be created when an annotation is submitted",
+  "commit": "c9758b2fb911f789d6ba3c4b1dd8a44528eea5d0",
   "branch": "master",
-  "date": "2022-04-13T13:55:17Z"
+  "date": "2023/09/22 11:06:45"
 }

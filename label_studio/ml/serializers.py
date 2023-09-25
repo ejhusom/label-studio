@@ -1,19 +1,27 @@
 """This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
 """
-from rest_framework import serializers
+from core.utils.io import validate_upload_url
+from django.conf import settings
 from ml.models import MLBackend
+from rest_framework import serializers
 
 
 class MLBackendSerializer(serializers.ModelSerializer):
+    def validate_url(self, value):
+        validate_upload_url(value, block_local_urls=settings.ML_BLOCK_LOCAL_IP)
+
+        return value
+
     def validate(self, attrs):
         attrs = super(MLBackendSerializer, self).validate(attrs)
         url = attrs['url']
-        if MLBackend.healthcheck_(url).is_error:
+        healthcheck_response = MLBackend.healthcheck_(url)
+        if healthcheck_response.is_error:
             raise serializers.ValidationError(
                 f"Can't connect to ML backend {url}, health check failed. "
                 f'Make sure it is up and your firewall is properly configured. '
                 f'<a href="https://labelstud.io/guide/ml.html>Learn more</a>'
-                f' about how to set up an ML backend.'
+                f' about how to set up an ML backend. Additional info:' + healthcheck_response.error_message
             )
         project = attrs['project']
         setup_response = MLBackend.setup_(url, project)
